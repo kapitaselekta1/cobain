@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prioritas Tugas Mahasiswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <style>
+      /* Styling untuk modal notifikasi pengingat */
+      #reminderModal {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, opacity;
+      }
+
+      #reminderModal.hidden {
+        transform: translateY(3rem);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #reminderModal.visible {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+
+  <body class="bg-white text-gray-700 font-sans antialiased">
+    <!-- Header navigasi -->
+    <header
+      class="sticky top-0 bg-white shadow-sm z-20 border-b border-gray-100 transition-colors duration-300"
+    >
+      <nav
+        class="max-w-[1200px] mx-auto flex items-center justify-between py-4 px-6"
+      >
+        <div
+          class="text-3xl font-extrabold tracking-tight text-gray-900 select-none"
+        >
+          PlanMates
+        </div>
+        <ul class="flex space-x-8 text-gray-600">
+          <li>
+            <a href="#halaman1" class="hover:text-gray-900 transition"
+              >Beranda</a
+            >
+          </li>
+          <li>
+            <a href="#halaman2" class="hover:text-gray-900 transition"
+              >Daftar Tugas</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="max-w-[1200px] mx-auto px-6 pb-20">
+      <!-- Halaman Awal -->
+      <section
+        id="halaman1"
+        class="min-h-screen flex flex-col items-center justify-center py-24 space-y-12"
+      >
+        <img
+          src="https://img.freepik.com/free-vector/task-management-concept-illustration_114360-7615.jpg"
+          alt="Ilustrasi Manajemen Tugas"
+          class="w-96 rounded-lg shadow-lg"
+        />
+        <h1
+          class="text-5xl font-extrabold leading-tight max-w-4xl text-center text-gray-900 select-none tracking-wide"
+        >
+          WELCOME TO PLANMATES
+        </h1>
+        <p class="text-center max-w-3xl text-lg text-gray-600 leading-relaxed">
+          Kelola tugas mingguanmu dengan mudah berdasarkan prioritas penting dan
+          deadline. Mulai rencanakan dengan lebih bijak dan produktif!
+        </p>
+
+        <!-- Input Username -->
+        <input
+          type="text"
+          id="usernameInput"
+          placeholder="Masukkan nama atau username"
+          required
+          class="mb-8 px-6 py-3 border border-gray-300 rounded-lg w-full max-w-xs text-center text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+        />
+
+        <button
+          onclick="showHalaman2()"
+          class="bg-gray-900 hover:bg-gray-800 text-white px-12 py-4 rounded-lg text-xl font-semibold transition-shadow shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500"
+        >
+          Mulai Mengisi Tugas
+        </button>
+      </section>
+
+      <!-- Halaman Input dan Daftar Tugas -->
+      <section id="halaman2" class="hidden py-24 space-y-16">
+        <h1
+          class="text-4xl font-extrabold text-center text-gray-900 max-w-4xl mx-auto select-none tracking-wide"
+        >
+          📚 Jadwalku Minggu Ini
+        </h1>
+
+        <form
+          id="taskForm"
+          class="bg-white shadow rounded-lg p-8 max-w-3xl mx-auto space-y-6 border border-gray-200"
+        >
+          <div>
+            <label
+              for="namaTugas"
+              class="block mb-2 text-sm font-semibold text-gray-700"
+              >Nama Tugas</label
+            >
+            <input
+              type="text"
+              id="namaTugas"
+              required
+              class="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label
+              for="jenisTugas"
+              class="block mb-2 text-sm font-semibold text-gray-700"
+              >Jenis Tugas</label
+            >
+            <select
+              id="jenisTugas"
+              class="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+            >
+              <option value="7">Skripsi</option>
+              <option value="7">Artikel / Laporan penting</option>
+              <option value="6">Proyek besar</option>
+              <option value="6">Harian</option>
+              <option value="6">Presentasi pribadi</option>
+              <option value="5">Kelompok</option>
+              <option value="5">Belajar mandiri</option>
+              <option value="1">Hobi</option>
+              <option value="0">Nongkrong</option>
+              <option value="2">Rapat</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="kategoriDeadline"
+              class="block mb-2 text-sm font-semibold text-gray-700"
+              >Deadline (kategori)</label
+            >
+            <select
+              id="kategoriDeadline"
+              class="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+            >
+              <option value="2">0 - 2 hari</option>
+              <option value="1">3 - 4 hari</option>
+              <option value="0">5 - 7 hari</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="tanggalDeadline"
+              class="block mb-2 text-sm font-semibold text-gray-700"
+              >Deadline (WIB)</label
+            >
+            <input
+              type="datetime-local"
+              id="tanggalDeadline"
+              required
+              class="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition-shadow shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500"
+          >
+            Tambah Tugas
+          </button>
+        </form>
+
+        <div
+          id="notif"
+          class="hidden mt-6 max-w-3xl mx-auto text-center text-green-600 font-medium"
+        ></div>
+
+        <section class="mt-16 max-w-5xl mx-auto space-y-16">
+          <div>
+            <h2 class="text-2xl font-semibold mb-4 text-gray-900 select-none">
+              📌 Daftar Tugas
+            </h2>
+            <div
+              class="overflow-x-auto rounded-lg shadow bg-white border border-gray-200"
+            >
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-900 text-white">
+                  <tr>
+                    <th class="px-6 py-3 text-left">✓</th>
+                    <th class="px-6 py-3 text-left">Nama</th>
+                    <th class="px-6 py-3 text-left">Jenis</th>
+                    <th class="px-6 py-3 text-left">Tanggal</th>
+                    <th class="px-6 py-3 text-left">Jam</th>
+                    <th class="px-6 py-3 text-left">Kategori</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelTugas" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-2xl font-semibold mb-4 text-gray-900 select-none">
+              ✅ Tugas Selesai
+            </h2>
+            <div
+              class="overflow-x-auto rounded-lg shadow bg-white border border-gray-200"
+            >
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-600 text-white">
+                  <tr>
+                    <th class="px-6 py-3 text-left">✓</th>
+                    <th class="px-6 py-3 text-left">Nama</th>
+                    <th class="px-6 py-3 text-left">Jenis</th>
+                    <th class="px-6 py-3 text-left">Tanggal</th>
+                    <th class="px-6 py-3 text-left">Jam</th>
+                    <th class="px-6 py-3 text-left">Kategori</th>
+                    <th class="px-6 py-3 text-left">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="tugasSelesai"
+                  class="divide-y divide-gray-100"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- Modal Notifikasi Pengingat -->
+    <div
+      id="reminderModal"
+      class="hidden fixed bottom-6 right-6 max-w-sm bg-white rounded-lg shadow-lg p-4 border border-gray-200 flex items-center space-x-4 z-50"
+    >
+      <div class="flex-grow">
+        <h3 id="reminderTitle" class="font-semibold text-gray-900">
+          Pengingat Tugas
+        </h3>
+        <p id="reminderBody" class="text-gray-600">
+          Tugas Anda akan segera jatuh tempo.
+        </p>
+      </div>
+      <button
+        id="remindLaterBtn"
+        class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+      >
+        Ingatkan Nanti
+      </button>
+      <button
+        id="closeReminderBtn"
+        class="ml-2 text-gray-600 hover:text-gray-900 text-2xl leading-none font-bold focus:outline-none"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Audio notifikasi -->
+    <audio
+      id="notificationSound"
+      preload="auto"
+      src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"
+    ></audio>
+
+    <script>
+      // DOM elements
+      const halaman1 = document.getElementById("halaman1");
+      const halaman2 = document.getElementById("halaman2");
+      const form = document.getElementById("taskForm");
+      const tabelBody = document.getElementById("tabelTugas");
+      const selesaiBody = document.getElementById("tugasSelesai");
+      const notif = document.getElementById("notif");
+      const reminderModal = document.getElementById("reminderModal");
+      const reminderTitle = document.getElementById("reminderTitle");
+      const reminderBody = document.getElementById("reminderBody");
+      const remindLaterBtn = document.getElementById("remindLaterBtn");
+      const closeReminderBtn = document.getElementById("closeReminderBtn");
+      const notificationSound = document.getElementById("notificationSound");
+
+      let username = "";
+      let tugasList = [];
+      let tugasSelesaiList = [];
+
+      let currentReminder = null;
+      let remindLaterTimeout = null;
+
+      // Fungsi kategori label
+      const kategoriLabel = (score) => {
+        if (score >= 8) return "Penting - Mendesak";
+        if (score >= 4) return "Penting - Tidak Mendesak";
+        if (score >= 2) return "Tidak Penting - Mendesak";
+        return "Tidak Penting - Tidak Mendesak";
+      };
+
+      // Fungsi warna kategori
+      const kategoriColor = (kategori) => {
+        if (kategori === "Penting - Mendesak")
+          return "text-red-600 font-semibold";
+        if (kategori === "Penting - Tidak Mendesak")
+          return "text-yellow-600 font-semibold";
+        if (kategori === "Tidak Penting - Mendesak")
+          return "text-blue-600 font-semibold";
+        return "text-gray-600 font-semibold";
+      };
+
+      // Tampilkan halaman 2 dan load data sesuai username
+      function showHalaman2() {
+        const input = document.getElementById("usernameInput").value.trim();
+        if (!input) {
+          alert("Masukkan nama atau username terlebih dahulu.");
+          return;
+        }
+        username = input;
+        halaman1.classList.add("hidden");
+        halaman2.classList.remove("hidden");
+        loadData();
+        tugasList.forEach((tugas) => scheduleReminder(tugas));
+      }
+
+      // Simpan data ke localStorage
+      function saveData() {
+        localStorage.setItem(`tugas_${username}`, JSON.stringify(tugasList));
+        localStorage.setItem(
+          `tugasSelesai_${username}`,
+          JSON.stringify(tugasSelesaiList)
+        );
+      }
+
+      // Load data dari localStorage
+      function loadData() {
+        const data = localStorage.getItem(`tugas_${username}`);
+        tugasList = data ? JSON.parse(data) : [];
+
+        const dataSelesai = localStorage.getItem(`tugasSelesai_${username}`);
+        tugasSelesaiList = dataSelesai ? JSON.parse(dataSelesai) : [];
+
+        renderTugas();
+        renderTugasSelesai();
+      }
+
+      // Render tugas aktif
+      const renderTugas = () => {
+        tabelBody.innerHTML = "";
+        tugasList.sort((a, b) => b.total - a.total);
+
+        tugasList.forEach((tugas, index) => {
+          const row = document.createElement("tr");
+          row.className = "hover:bg-green-50 transition";
+          row.innerHTML = `
+          <td class="px-6 py-3">
+            <input type="checkbox" class="selesaikanTugas" data-index="${index}" />
+          </td>
+          <td class="px-6 py-3">${tugas.nama}</td>
+          <td class="px-6 py-3">${tugas.jenisText}</td>
+          <td class="px-6 py-3">${tugas.tanggalWIB}</td>
+          <td class="px-6 py-3">${tugas.jamWIB}</td>
+          <td class="px-6 py-3 ${kategoriColor(tugas.kategori)}">${
+            tugas.kategori
+          }</td>
+        `;
+          row
+            .querySelector(".selesaikanTugas")
+            .addEventListener("change", function () {
+              if (this.checked) {
+                tugasSelesaiList.push(tugasList[index]);
+                tugasList.splice(index, 1);
+                saveData();
+                renderTugas();
+                renderTugasSelesai();
+              }
+            });
+          tabelBody.appendChild(row);
+        });
+      };
+
+      // Render tugas selesai
+      const renderTugasSelesai = () => {
+        selesaiBody.innerHTML = "";
+        tugasSelesaiList.forEach((tugas, index) => {
+          const row = document.createElement("tr");
+          row.className = "bg-gray-100 hover:bg-gray-200 transition";
+          row.innerHTML = `
+          <td class="px-6 py-3">
+            <input type="checkbox" checked disabled />
+          </td>
+          <td class="px-6 py-3 line-through">${tugas.nama}</td>
+          <td class="px-6 py-3 line-through">${tugas.jenisText}</td>
+          <td class="px-6 py-3 line-through">${tugas.tanggalWIB}</td>
+          <td class="px-6 py-3 line-through">${tugas.jamWIB}</td>
+          <td class="px-6 py-3 ${kategoriColor(tugas.kategori)} line-through">${
+            tugas.kategori
+          }</td>
+          <td class="px-6 py-3">
+            <button class="text-red-600 hover:text-red-800 font-semibold hapusTugas" data-index="${index}">🗑</button>
+            <button class="text-blue-600 hover:text-blue-800 font-semibold kembalikanTugas" data-index="${index}">🔁</button>
+          </td>
+        `;
+
+          // Event listener untuk tombol hapus
+          row.querySelector(".hapusTugas").addEventListener("click", () => {
+            tugasSelesaiList.splice(index, 1);
+            saveData();
+            renderTugasSelesai();
+          });
+
+          // Event listener untuk tombol kembalikan
+          row
+            .querySelector(".kembalikanTugas")
+            .addEventListener("click", () => {
+              tugasList.push(tugasSelesaiList[index]);
+              tugasSelesaiList.splice(index, 1);
+              saveData();
+              renderTugas();
+              renderTugasSelesai();
+            });
+
+          selesaiBody.appendChild(row);
+        });
+      };
+
+      // Suara notifikasi diputar mengikuti volume perangkat
+      function playNotificationSound() {
+        if (!notificationSound) return;
+        notificationSound.pause();
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(() => {
+          /* Autoplay bisa diblokir jika belum ada interaksi pengguna */
+        });
+      }
+
+      // Modal pengingat muncul
+      function showReminderModal(tugas) {
+        currentReminder = tugas;
+        reminderTitle.textContent = `Pengingat Tugas: ${tugas.nama}`;
+        reminderBody.textContent = `Deadline: ${new Date(
+          tugas.tanggalDeadline
+        ).toLocaleString("id-ID")}`;
+        reminderModal.classList.remove("hidden");
+        reminderModal.classList.add("visible");
+        playNotificationSound();
+      }
+
+      // Sembunyikan modal pengingat
+      function hideReminderModal() {
+        reminderModal.classList.add("hidden");
+        reminderModal.classList.remove("visible");
+      }
+
+      // Kirim native notification via Service Worker
+      function kirimNativeNotification(tugas) {
+        if (
+          "serviceWorker" in navigator &&
+          navigator.serviceWorker.controller
+        ) {
+          navigator.serviceWorker.controller.postMessage({
+            type: "SHOW_NOTIFICATION",
+            title: "Pengingat Tugas!",
+            options: {
+              body: `Tugas "${tugas.nama}" akan jatuh tempo pada ${new Date(
+                tugas.tanggalDeadline
+              ).toLocaleString("id-ID")}`,
+              tag: tugas.nama,
+              renotify: true,
+              requireInteraction: true,
+            },
+          });
+        }
+        if (document.visibilityState === "visible") {
+          playNotificationSound();
+        }
+      }
+
+      // Jadwalkan pengingat 1 hari sebelum deadline
+      function scheduleReminder(tugas) {
+        const waktuDeadline = new Date(tugas.tanggalDeadline).getTime();
+        const waktuReminder = waktuDeadline - 24 * 60 * 60 * 1000; // 1 hari sebelum
+        const delay = waktuReminder - Date.now();
+
+        if (delay > 0) {
+          setTimeout(() => {
+            showReminderModal(tugas);
+            kirimNativeNotification(tugas);
+          }, delay);
+        }
+      }
+
+      // Jadwalkan pengingat ulang 2 jam sebelum deadline (ingatkan nanti)
+      function scheduleRemindLater(tugas) {
+        const waktuDeadline = new Date(tugas.tanggalDeadline).getTime();
+        const waktuReminder = waktuDeadline - 2 * 60 * 60 * 1000; // 2 jam sebelum
+        const delay = waktuReminder - Date.now();
+
+        if (delay > 0) {
+          if (remindLaterTimeout) clearTimeout(remindLaterTimeout);
+          remindLaterTimeout = setTimeout(() => {
+            showReminderModal(tugas);
+            kirimNativeNotification(tugas);
+          }, delay);
+        }
+      }
+
+      // Tombol "Ingatkan Nanti" klik
+      remindLaterBtn.addEventListener("click", () => {
+        if (currentReminder) {
+          scheduleRemindLater(currentReminder);
+          alert(
+            `Anda akan diingatkan lagi 2 jam sebelum deadline tugas "${currentReminder.nama}".`
+          );
+        }
+        hideReminderModal();
+      });
+
+      // Tombol tutup modal klik
+      closeReminderBtn.addEventListener("click", () => {
+        hideReminderModal();
+      });
+
+      // Tangani submit form tambah tugas
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const nama = document.getElementById("namaTugas").value.trim();
+        const jenisVal = document.getElementById("jenisTugas").value;
+        const kategoriVal = document.getElementById("kategoriDeadline").value;
+        const tanggalDeadline =
+          document.getElementById("tanggalDeadline").value;
+
+        if (!nama || !tanggalDeadline) {
+          alert("Mohon lengkapi semua data tugas.");
+          return;
+        }
+
+        const total = Number(jenisVal) + Number(kategoriVal);
+
+        const jenisText =
+          document.getElementById("jenisTugas").selectedOptions[0].text;
+
+        const dateObj = new Date(tanggalDeadline);
+        const tanggalWIB = dateObj.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        const jamWIB = dateObj.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+
+        const kategori = kategoriLabel(total);
+
+        const tugasBaru = {
+          nama,
+          jenisVal: Number(jenisVal),
+          kategoriVal: Number(kategoriVal),
+          total,
+          jenisText,
+          tanggalDeadline,
+          tanggalWIB,
+          jamWIB,
+          kategori,
+        };
+
+        tugasList.push(tugasBaru);
+        saveData();
+        renderTugas();
+
+        form.reset();
+
+        notif.textContent = `Tugas "${nama}" berhasil ditambahkan!`;
+        notif.classList.remove("hidden");
+        setTimeout(() => notif.classList.add("hidden"), 3000);
+
+        scheduleReminder(tugasBaru);
+      });
+
+      // Registrasi Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("sw.js")
+            .then((registration) => {
+              console.log(
+                "ServiceWorker terdaftar dengan scope:",
+                registration.scope
+              );
+            })
+            .catch((error) => {
+              console.error("Registrasi ServiceWorker gagal:", error);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
